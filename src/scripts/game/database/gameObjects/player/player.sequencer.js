@@ -4,7 +4,7 @@ export default {
       down: {
         resetOnPlay: true,
         stepDuration: 6,
-        frames: new Array(4),
+        frames: [1, 2, 3, 0],
         step(frame) {
           this.components.spriteRenderer.image = 'alba.walk.down' + frame
         },
@@ -12,7 +12,7 @@ export default {
       left: {
         resetOnPlay: true,
         stepDuration: 6,
-        frames: new Array(4),
+        frames: [1, 2, 3, 0],
         step(frame) {
           this.components.spriteRenderer.image = 'alba.walk.left' + frame
         },
@@ -20,7 +20,7 @@ export default {
       up: {
         resetOnPlay: true,
         stepDuration: 6,
-        frames: new Array(4),
+        frames: [1, 2, 3, 0],
         step(frame) {
           this.components.spriteRenderer.image = 'alba.walk.up' + frame
         },
@@ -28,7 +28,7 @@ export default {
       right: {
         resetOnPlay: true,
         stepDuration: 6,
-        frames: new Array(4),
+        frames: [1, 2, 3, 0],
         step(frame) {
           this.components.spriteRenderer.image = 'alba.walk.right' + frame
         },

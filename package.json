@@ -55,11 +55,13 @@
     "workbox-webpack-plugin": "^5.1.3"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.10.4",
+    "core-js": "^2.6.9",
     "deep-equal": "^1.1.1",
     "lodash": "^4.17.19",
     "matter-js": "^0.16.1",
     "phaser": "^3.24.1",
-    "poly-decomp": "^0.3.0"
+    "poisson-process": "^1.0.0",
+    "poly-decomp": "^0.3.0",
+    "weighted": "^0.3.0"
   }
 }

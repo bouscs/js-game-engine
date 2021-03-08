@@ -1,4 +1,4 @@
-import '@babel/polyfill'
+import 'core-js'
 import engineConfig from './game/engineConfig'
 import Engine from './engine/Engine'
 
