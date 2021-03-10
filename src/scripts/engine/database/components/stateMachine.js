@@ -19,6 +19,12 @@ export default {
     const changeState = (type, name) => {
       if (this.state[type].update)
         this.ctx.off('update', this.state[type].update)
+      if (this.state[type].fixedUpdate)
+        this.ctx.off('fixedUpdate', this.state[type].fixedUpdate)
+      if (this.state[type].beforeFixedUpdate)
+        this.ctx.off('beforeFixedUpdate', this.state[type].beforeFixedUpdate)
+      if (this.state[type].afterFixedUpdate)
+        this.ctx.off('afterFixedUpdate', this.state[type].afterFixedUpdate)
       if (this.state[type].exit) this.state[type].exit()
 
       this.state[type] = {}
@@ -34,6 +40,25 @@ export default {
       if (stateConfig.update) {
         state.update = stateConfig.update.bind(this.gameObject)
         this.ctx.on('update', state.update)
+      }
+
+      if (stateConfig.fixedUpdate) {
+        state.fixedUpdate = stateConfig.fixedUpdate.bind(this.gameObject)
+        this.ctx.on('fixedUpdate', state.fixedUpdate)
+      }
+
+      if (stateConfig.beforeFixedUpdate) {
+        state.beforeFixedUpdate = stateConfig.beforeFixedUpdate.bind(
+          this.gameObject
+        )
+        this.ctx.on('beforeFixedUpdate', state.beforeFixedUpdate)
+      }
+
+      if (stateConfig.afterFixedUpdate) {
+        state.afterFixedUpdate = stateConfig.afterFixedUpdate.bind(
+          this.gameObject
+        )
+        this.ctx.on('afterFixedUpdate', state.afterFixedUpdate)
       }
 
       if (stateConfig.exit) {

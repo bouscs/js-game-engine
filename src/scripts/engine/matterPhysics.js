@@ -4,7 +4,7 @@ export default engine => {
   const matterEngine = Engine.create()
   matterEngine.world.gravity.scale = 1
   matterEngine.world.gravity.y = 0
-  engine.on('fixedUpdate', () =>
+  engine.on('afterFixedUpdate', () =>
     Engine.update(matterEngine, engine.fixedDelta * 1000)
   )
 

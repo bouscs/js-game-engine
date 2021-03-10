@@ -19,6 +19,7 @@ export default class GameObject extends EngineComponent {
           x: 0,
           y: 0,
         },
+        zIndex: 0,
       }
       this.children = []
       this.components = {}
@@ -37,7 +38,6 @@ export default class GameObject extends EngineComponent {
               )
               return
             }
-
             const type = this.ctx.findTemplate(componentConfig.base)
 
             const custom = _.merge({}, type)

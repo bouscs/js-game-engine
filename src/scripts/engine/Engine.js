@@ -10,6 +10,22 @@ import { on } from './ev'
  * @typedef {Object} EngineConfig
  */
 
+const parseImports = importParam => {
+  if (typeof importParam === 'string') return importParam
+
+  let resolved = {}
+
+  Object.keys(importParam).forEach(key => {
+    if (Array.isArray(importParam[key])) {
+      importParam[key].forEach((p, i) => {
+        resolved[key + i] = p
+      })
+    } else resolved[key] = _.merge({}, parseImports(importParam[key]))
+  })
+
+  return resolved
+}
+
 /**
  * An Engine controls the game meta data as well as the game lifecycle
  * @typedef {Object} Engine
@@ -27,18 +43,24 @@ class Engine extends EventEmitter {
     this.config = _.merge(this.config, engineConfig)
     this.game = new Game(this.config.game)
     this.database = _.merge({}, this.game.database)
+    this.database.templates.push(...defaultConfig.templates)
 
     Object.keys(this.database.images).forEach(key => {
-      this.database.images[key] = this.parseImports(this.database.images[key])
+      this.database.images[key] = parseImports(this.database.images[key])
     })
 
     this.database.images = unnest(this.database.images)
 
-    // Set all templates
-    if (this.database.templates)
-      this.config.templates.push(this.database.templates)
-
     this.fixedDelta = this.config.fixedDelta
+
+    this.input = {
+      keys: {
+        ArrowUp: false,
+        ArrowDown: false,
+        ArrowLeft: false,
+        ArrowRight: false,
+      },
+    }
 
     const ready = {
       renderer: false,
@@ -59,22 +81,6 @@ class Engine extends EventEmitter {
     // Initialize Physics
     if (this.config.physics) this.config.physics(this)
     else this.emit('physicsReady')
-  }
-
-  parseImports(importParam) {
-    if (typeof importParam === 'string') return importParam
-
-    let resolved = {}
-
-    Object.keys(importParam).forEach(key => {
-      if (Array.isArray(importParam[key])) {
-        importParam[key].forEach((p, i) => {
-          resolved[key + i] = p
-        })
-      } else resolved[key] = _.merge({}, this.parseImports(importParam[key]))
-    })
-
-    return resolved
   }
 
   /**
@@ -118,12 +124,14 @@ class Engine extends EventEmitter {
       this.state.deltaCounter / this.fixedDelta
     )
 
+    if (this.renderer) this.emit('render')
+    this.emit('beforeUpdate', delta)
+    this.emit('update', delta)
+    this.emit('afterUpdate', delta)
+
     this.fixedTick(fixedTickAmount)
 
     this.state.deltaCounter %= this.fixedDelta
-
-    if (this.renderer) this.emit('render')
-    this.emit('update', delta)
   }
 
   fixedTick(amount) {
@@ -141,7 +149,7 @@ class Engine extends EventEmitter {
    */
   getFullTemplate(template) {
     if (template.extends) {
-      template = this.mergeTemplate(template, template.extends)
+      return this.mergeTemplate(template, template.extends)
     }
 
     return template
@@ -157,11 +165,11 @@ class Engine extends EventEmitter {
       template.extends = null
     }
 
-    if (_.isString(extension)) {
+    if (typeof extension === 'string') {
       extension = this.findTemplate(extension)
     }
 
-    return _.merge(template, extension)
+    return _.merge(_.cloneDeep(extension), template)
   }
 
   /**
@@ -173,19 +181,13 @@ class Engine extends EventEmitter {
 
     let template = null
 
-    this.config.templates.forEach(configTemplate => {
+    this.database.templates.forEach(configTemplate => {
       if (name == configTemplate.name) {
-        template = configTemplate
+        template = this.getFullTemplate(configTemplate)
       }
     })
 
-    this.database.templates.forEach(dbTemplate => {
-      if (name == dbTemplate.name) {
-        template = dbTemplate
-      }
-    })
-
-    return this.getFullTemplate(template)
+    return template
   }
 
   /**

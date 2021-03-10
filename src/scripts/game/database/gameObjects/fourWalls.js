@@ -41,7 +41,7 @@ export default {
         },
         size: {
           x: 16,
-          y: 1,
+          y: 0,
         },
       },
     },
@@ -55,7 +55,7 @@ export default {
         },
         size: {
           x: 16,
-          y: 1,
+          y: 0,
         },
       },
     },

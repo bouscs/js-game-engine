@@ -4,7 +4,6 @@ import playerListen from './player.listen'
 
 export default {
   name: 'player',
-  extends: ['character'],
   store: {
     size: {
       x: 1,
@@ -13,16 +12,24 @@ export default {
     inputs: [],
     direction: 'down',
   },
-  update() {
+  methods: {
+    addInput(input) {
+      this.state.inputs.push(input)
+    },
+    removeInput(input) {
+      _.remove(this.state.inputs, existing => existing === input)
+    },
+  },
+  beforeUpdate() {
     const input = this.components.physicsMovement2d.input
 
     const x = input.right - input.left
     const y = input.down - input.up
 
-    if (y != 0 || x != 0) {
-      if (x == 0) this.state.direction = y > 0 ? 'down' : 'up'
-      else this.state.direction = x > 0 ? 'right' : 'left'
+    if (this.state.inputs.length > 0)
+      this.state.direction = _.last(this.state.inputs)
 
+    if (y != 0 || x != 0) {
       this.components.stateMachine.setState('main', 'walk')
     } else {
       this.components.stateMachine.setState('main', 'idle')
@@ -56,7 +63,7 @@ export default {
     {
       base: 'physicsMovement2d',
       template: {
-        speed: 2,
+        speed: 1.7,
       },
     },
     {

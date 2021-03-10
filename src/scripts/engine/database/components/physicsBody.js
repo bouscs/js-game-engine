@@ -3,7 +3,7 @@ export default {
   bodyType: 'rectangle',
   bodyOptions: {
     mass: 1,
-    friction: 0.1,
+    friction: 0,
     frictionAir: 0.5,
     frictionStatic: 0.5,
     inertia: Infinity,

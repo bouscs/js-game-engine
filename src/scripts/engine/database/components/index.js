@@ -5,6 +5,7 @@ import sequencer from './sequencer'
 import physicsBody from './physicsBody'
 import physicsMovement2d from './physicsMovement2d'
 import textRenderer from './textRenderer'
+import tilemapRenderer from './tilemapRenderer'
 
 export default [
   spriteRenderer,
@@ -14,4 +15,5 @@ export default [
   physicsBody,
   physicsMovement2d,
   textRenderer,
+  tilemapRenderer,
 ]

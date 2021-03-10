@@ -29,7 +29,6 @@ export default class EngineComponent extends EventEmitter {
     super()
 
     this.ctx = ctx
-
     this.template = this.ctx.getFullTemplate(template)
 
     /**
@@ -52,6 +51,14 @@ export default class EngineComponent extends EventEmitter {
           this.update = loadTemplate.update
           this.ctx.on('update', delta => this.update(delta))
         }
+        if (loadTemplate.beforeUpdate) {
+          this.beforeUpdate = loadTemplate.beforeUpdate
+          this.ctx.on('beforeUpdate', delta => this.beforeUpdate(delta))
+        }
+        if (loadTemplate.afterUpdate) {
+          this.afterUpdate = loadTemplate.afterUpdate
+          this.ctx.on('afterUpdate', delta => this.afterUpdate(delta))
+        }
         if (loadTemplate.fixedUpdate) {
           this.fixedUpdate = loadTemplate.fixedUpdate
           this.ctx.on('fixedUpdate', () => this.fixedUpdate())
@@ -65,13 +72,9 @@ export default class EngineComponent extends EventEmitter {
           this.ctx.on('beforeFixedUpdate', () => this.beforeFixedUpdate())
         }
 
-        if (loadTemplate.actions) {
-          this.actions = {}
-
-          Object.keys(loadTemplate.actions).forEach(actionName => {
-            this.actions[actionName] = loadTemplate.actions[actionName].bind(
-              this
-            )
+        if (loadTemplate.methods) {
+          Object.keys(loadTemplate.methods).forEach(actionName => {
+            this[actionName] = loadTemplate.methods[actionName].bind(this)
           })
         }
 

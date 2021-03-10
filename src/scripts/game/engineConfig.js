@@ -7,5 +7,5 @@ export default {
   renderer: phaserRenderer,
   physics: matterPhysics,
   resolution: { width: 1600, height: 900 },
-  maxFps: 90,
+  maxFps: 180,
 }

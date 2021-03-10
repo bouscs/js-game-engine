@@ -10,14 +10,32 @@ export default engine => {
       Object.keys(engine.database.images).forEach(image => {
         this.load.image(image, 'assets/img/' + engine.database.images[image])
       })
+
+      Object.keys(engine.database.tilesets).forEach(tileset => {
+        const data = engine.database.tilesets[tileset]
+        this.load.spritesheet(tileset, 'assets/img/' + data.path, {
+          frameWidth: data.frameWidth,
+          frameHeight: data.frameHeight,
+        })
+      })
     }
 
     create() {
       console.log(this)
       const keyboard = this.input.keyboard
 
-      keyboard.on('keydown', event => engine.emit('keyDown', event))
-      keyboard.on('keyup', event => engine.emit('keyUp', event))
+      keyboard.on('keydown', event => {
+        if (engine.input.keys[event.key] === false) {
+          engine.input.keys[event.key] = true
+          engine.emit('keyDown', event)
+        }
+      })
+      keyboard.on('keyup', event => {
+        if (engine.input.keys[event.key] === true) {
+          engine.input.keys[event.key] = false
+          engine.emit('keyUp', event)
+        }
+      })
 
       const resolutionUnits = {
         width: engine.config.resolution.width,
@@ -35,6 +53,25 @@ export default engine => {
         ctx: engine,
         state: {},
         phaserScene: this,
+
+        addTilemap(layer) {
+          const data = { tileset: layer.renderTileset, tileData: [] }
+
+          layer.tileData.forEach((row, y) => {
+            data.tileData[y] = []
+
+            layer.tileData[y].forEach((column, x) => {
+              data.tileData[y][x] = this.phaserScene.add.sprite(
+                x,
+                y,
+                data.tileset,
+                layer.tileData[y][x]
+              )
+            })
+          })
+
+          return data
+        },
 
         addImage(image) {
           const instance = this.phaserScene.add.sprite(0, 0, image)
@@ -63,6 +100,32 @@ export default engine => {
           )
         },
 
+        renderTilemap() {
+          const tilemap = this.rendererData
+          const sizeX = this.config.tileSize.x
+          const sizeY = this.config.tileSize.y
+
+          Object.keys(tilemap).forEach(layer => {
+            tilemap[layer].tileData.forEach((row, y) => {
+              tilemap[layer].tileData[y].forEach((column, x) => {
+                const image = tilemap[layer].tileData[y][x]
+
+                image.setPosition(
+                  this.gameObject.state.position.x + (0.5 + x) * sizeX,
+                  this.gameObject.state.position.y + (0.5 + y) * sizeY
+                )
+
+                const scale = sizeToScale(image, { x: sizeX, y: sizeY })
+                image.setScale(scale.x, scale.y)
+
+                if (image.depth != this.gameObject.state.zIndex) {
+                  image.depth = this.gameObject.state.zIndex
+                }
+              })
+            })
+          })
+        },
+
         renderImage() {
           const image = this.state.rendererData
           const objProps = this.gameObject.state
@@ -77,6 +140,10 @@ export default engine => {
 
           if (image.texture.key != this.image) {
             image.setTexture(this.image)
+          }
+
+          if (image.depth != objProps.zIndex) {
+            image.depth = objProps.zIndex
           }
         },
 

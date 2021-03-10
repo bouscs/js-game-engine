@@ -1,4 +1,5 @@
 import equal from 'deep-equal'
+import { vec2 } from 'gl-matrix'
 
 export default {
   name: 'physicsMovement2d',
@@ -25,12 +26,16 @@ export default {
       y: input.down - input.up,
     }
 
+    const vec = [this.direction.x, this.direction.y]
+
+    vec2.normalize(vec, vec)
+
     this.ctx.physics.body.applyForce(
       this.gameObject.state.body,
       this.gameObject.state.position,
       {
-        x: this.direction.x * this.ctx.physics.scaleFactor * this.speed,
-        y: this.direction.y * this.ctx.physics.scaleFactor * this.speed,
+        x: vec[0] * this.ctx.physics.scaleFactor * this.speed,
+        y: vec[1] * this.ctx.physics.scaleFactor * this.speed,
       }
     )
 
