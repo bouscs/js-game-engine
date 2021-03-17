@@ -1,6 +1,7 @@
 import EngineComponent from './EngineComponent'
 import GameObject from './GameObject'
 import Camera from './Camera'
+import { createNode } from '../nodeObject'
 
 /**
  * A template of GameObjects that can be thought of actors
@@ -25,6 +26,7 @@ export default class Scene extends EngineComponent {
         const newObject = new GameObject(ctx, fTemplate)
         newObject.load()
         newObject.scene = this
+        //const newObject = createNode(this.ctx, fTemplate)
         this.objects.push(newObject)
       })
     })

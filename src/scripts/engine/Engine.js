@@ -4,6 +4,7 @@ import Scene from './engineComponents/Scene'
 import EventEmitter from 'events'
 import defaultConfig from './engineConfig'
 import { on } from './ev'
+import gameObjectCreator from './gameObjectCreator'
 
 /**
  * Settings loaded on Engine constructor
@@ -71,6 +72,8 @@ class Engine extends EventEmitter {
       ready[name] = true
       if (Object.keys(ready).every(r => ready[r] === true)) this.emit('ready')
     }
+
+    this.testObject = gameObjectCreator(this)
 
     on(this, 'rendererReady', () => setReady('renderer'))
     on(this, 'physicsReady', () => setReady('physics'))
@@ -187,6 +190,8 @@ class Engine extends EventEmitter {
       }
     })
 
+    if (!template) this.error('template not found:', name)
+
     return template
   }
 
@@ -224,6 +229,10 @@ class Engine extends EventEmitter {
 
   warn(message) {
     this.config.debug.warn(message)
+  }
+
+  debug(message) {
+    this.config.debug.debug(message)
   }
 }
 
